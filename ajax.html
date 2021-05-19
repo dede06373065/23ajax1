@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ajax</title>
+</head>
+
+<body>
+    <div id="root"></div>
+    <script src="./js/react.development.js"></script>
+    <script src="./js/react-dom.development.js"></script>
+    <script src="./js/babel.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/axios/0.21.1/axios.js"></script>
+    <script type="text/babel">
+
+
+        //根据关键字在github上搜索匹配最受欢迎的库
+        //显示库名，点击链接查看
+        //测试接口：https://api.github.com/search/repositories?q=r&sort=stars
+
+        class MostStarRepo extends React.Component {
+            state = {
+                repoName: '',
+                repoUrl: ''
+            }
+            componentDidMount(){
+                //const url=`https://api.github.com/search/repositories?q=r&sort=stars`
+                const url=`https://api.github.com/search2/repositories?q=r&sort=stars`
+                //使用axios发送ajax请求
+                axios.get(url).then(response=>{
+                    const result=response.data;
+                    const {name, html_url}=result.items[0]
+                    this.setState({repoName:name,
+                    repoUrl:html_url})
+                }).catch((error)=>{
+                    alert(error.message)
+                })
+
+                fetch(url).then(response=>{
+                    return response.json()
+                }).then(data=>{
+                    const {name, html_url}=data.items[0]
+                    this.setState({repoName:name, repoUrl:html_url})
+            
+                })
+            }
+            render() {
+                const { repoName, repoUrl } = this.state
+                if (!repoName) {
+                    return <h2>Loading...</h2>
+                } else {
+                    return <h2>Most star repo is <a href={repoUrl}> {repoName}</a></h2>
+                }
+            }
+        }
+        ReactDOM.render(<MostStarRepo />, document.getElementById('root'));
+    </script>
+</body>
+
+</html>
